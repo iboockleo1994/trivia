@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trivia Educativa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .question {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .options button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .correct { background-color: #4CAF50 !important; }
+        .incorrect { background-color: #f44336 !important; }
+        #nextBtn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container animate__animated animate__fadeIn">
+        <div id="quiz">
+            <p class="question" id="question"></p>
+            <div class="options" id="options"></div>
+            <button id="nextBtn" onclick="nextQuestion()">Siguiente</button>
+        </div>
+        <div id="result" style="display: none;"></div>
+    </div>
+    <script>
+        const questions = [
+            { q: "¿Cuál es la capital de Francia?", options: ["Madrid", "París", "Londres", "Berlín"], answer: 1 },
+            { q: "¿Cuántos planetas tiene el sistema solar?", options: ["8", "9", "10", "7"], answer: 0 },
+            { q: "¿Quién escribió 'Don Quijote de la Mancha'?", options: ["Cervantes", "Shakespeare", "Borges", "García Márquez"], answer: 0 },
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        function loadQuestion() {
+            document.getElementById("nextBtn").style.display = "none";
+            const q = questions[currentQuestion];
+            document.getElementById("question").innerText = q.q;
+            const optionsDiv = document.getElementById("options");
+            optionsDiv.innerHTML = "";
+            q.options.forEach((option, index) => {
+                const btn = document.createElement("button");
+                btn.innerText = option;
+                btn.onclick = () => checkAnswer(index, btn);
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex, btn) {
+            const q = questions[currentQuestion];
+            if (selectedIndex === q.answer) {
+                btn.classList.add("correct");
+                score++;
+            } else {
+                btn.classList.add("incorrect");
+            }
+            document.querySelectorAll(".options button").forEach(b => b.onclick = null);
+            document.getElementById("nextBtn").style.display = "block";
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById("quiz").style.display = "none";
+            const resultDiv = document.getElementById("result");
+            let feedback = "";
+            if (score === questions.length) feedback = "¡Excelente! Eres un genio.";
+            else if (score > 1) feedback = "¡Bien hecho! Puedes mejorar.";
+            else feedback = "Sigue practicando.";
+            resultDiv.innerHTML = `<h2>Puntaje: ${score}/${questions.length}</h2><p>${feedback}</p>`;
+            resultDiv.style.display = "block";
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
